@@ -1,33 +1,42 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include <tuple>
+#include <map>
 #include <unordered_set>
 
 const int NUMBER_OF_STUDENTS = 10;
 const int NUMBER_OF_TICKETS = 20;
-const int DIVIDER = 2;
+const int TICKETS_PER_STUDENT = 2;
 typedef std::vector<std::string> vstring;
 typedef std::unordered_set<int> uset;
 
 void Create_Students(std::vector<std::string>& s, const int NUMBER_OF_STUDENTS);
 void RandomizeTickets(uset& tk, const int NUMBER_OF_TICKETS);
-std::tuple<vstring, uset>* MakeTuples(vstring& s, uset& tk, const int DIVIDER = 1);
+std::map<vstring, std::vector<int> > MakeTuples(vstring& s, uset& tk, const int TICKETS_PER_STUDENT = 1);
 
 int main() {
 	using namespace std;
-	vector<string> students = {"Vasya", "Petya", "Zhenya"};
+	vstring students = {"Vasya", "Petya", "Zhenya"};
 	unordered_set<int> tickets;
 	RandomizeTickets(tickets, NUMBER_OF_TICKETS);
-	for (auto&& x : tickets) {
-		cout << x << ' ' ;
-	}
 	
-	tuple<vstring, uset> tp[NUMBER_OF_STUDENTS] = MakeTuples(students, tickets);
+	cout << *std::next(tickets.begin(), 0);
 
-	cout << get<0>(tp[i]) << ' '
-	<< get<1>(tp[i]) << endl;
+	std::multimap<vstring, std::vector<int> > mp;
+	int j = 0;	
+	for (int i = 0; i < students.size(); i++) {
+		std::vector<int> tks_per_st;
+		for (; j < TICKETS_PER_STUDENT; j++) {
+			tks_per_st.push_back(*std::next(tickets.begin(), j));
+			mp.insert(students[i], tks_per_st[j]);  
+		}
+	}
 
+	// for (auto pos = mp.begin(); pos != mp.end(); ++pos)
+    //     std::cout << pos->first << ' ' << pos->second << '\n';
+
+
+	
 	return 0;
 }
 
@@ -48,11 +57,11 @@ void RandomizeTickets(uset& tk, int NUMBER_OF_TICKETS) {
  *	ticket could be more than one
  * @param s 
  * @param tk 
- * @param DIVIDER 
+ * @param TICKETS_PER_STUDENT 
  * @return std::tuple<vstring, uset> 
  */
-std::tuple<vstring, uset>* MakeTuple(vstring& s, uset& tk, const int DIVIDER) {
-	if (DIVIDER == 0)
-		exit(-1);
-	return std::make_tuple(s, tk);
-}
+// std::tuple<vstring, std::vector<int> > MakeTuple(vstring& s, uset& tk, const int TICKETS_PER_STUDENT) {
+// 	if (TICKETS_PER_STUDENT == 0)
+// 		exit(-1);
+// 	return std::make_tuple(s, tk);
+// }
