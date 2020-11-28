@@ -1,42 +1,54 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include <map>
 #include <unordered_set>
+#include <ctime>
+#include <tuple>
 
-const int NUMBER_OF_STUDENTS = 10;
+
+const int NUMBER_OF_STUDENTS = 4;
 const int NUMBER_OF_TICKETS = 20;
-const int TICKETS_PER_STUDENT = 2;
+const int TICKETS_PER_STUDENT = 5;
 typedef std::vector<std::string> vstring;
 typedef std::unordered_set<int> uset;
 
 void Create_Students(std::vector<std::string>& s, const int NUMBER_OF_STUDENTS);
 void RandomizeTickets(uset& tk, const int NUMBER_OF_TICKETS);
-std::map<vstring, std::vector<int> > MakeTuples(vstring& s, uset& tk, const int TICKETS_PER_STUDENT = 1);
 
 int main() {
 	using namespace std;
-	vstring students = {"Vasya", "Petya", "Zhenya"};
+	vstring students = {"Vasya", "Petya", "Zhenya", "Gleb"};
 	unordered_set<int> tickets;
-	RandomizeTickets(tickets, NUMBER_OF_TICKETS);
-	
-	cout << *std::next(tickets.begin(), 0);
+	srand(time(0));
 
-	std::multimap<vstring, std::vector<int> > mp;
+	RandomizeTickets(tickets, NUMBER_OF_TICKETS);
+		
+	// for (auto it = tickets.begin(); it != tickets.end(); it++)
+	// 	cout << *it << ' ';
+	// std::cout << std::endl;
+
+	tuple<string, vector<int> > *tuple_array = new tuple<string, vector<int> >[NUMBER_OF_STUDENTS]; // Allocate memory
+	std::vector<int> *vector_array = new vector<int>[NUMBER_OF_STUDENTS];
 	int j = 0;	
-	for (int i = 0; i < students.size(); i++) {
-		std::vector<int> tks_per_st;
-		for (; j < TICKETS_PER_STUDENT; j++) {
-			tks_per_st.push_back(*std::next(tickets.begin(), j));
-			mp.insert(students[i], tks_per_st[j]);  
+	for (int i = 0; i < students.size(); i++) {	
+		for (int k = 0; k < TICKETS_PER_STUDENT; k++, j++) {
+			vector_array[i].push_back(*std::next(tickets.begin(), j));
 		}
+		tuple_array[i] = make_tuple(students[i], vector_array[i]);  
 	}
 
-	// for (auto pos = mp.begin(); pos != mp.end(); ++pos)
-    //     std::cout << pos->first << ' ' << pos->second << '\n';
-
-
 	
+
+	for (int i = 0; i < NUMBER_OF_STUDENTS; i++) {
+		cout << get<0>(tuple_array[i]) << " - ";
+		for (auto&& x : get<1>(tuple_array[i])) {
+			cout << x << ' ';
+		}
+		std::cout << std::endl;
+	}
+
+	delete[] vector_array;
+	delete[] tuple_array;
 	return 0;
 }
 
@@ -47,8 +59,8 @@ int main() {
 // 	}
 // }
 void RandomizeTickets(uset& tk, int NUMBER_OF_TICKETS) {
-	while (tk.size() <= NUMBER_OF_TICKETS)
-		tk.insert(rand() % (NUMBER_OF_TICKETS + 1));
+	while (tk.size() < NUMBER_OF_TICKETS)
+		tk.insert(rand() % NUMBER_OF_TICKETS + 1);
 }
 
 /**
